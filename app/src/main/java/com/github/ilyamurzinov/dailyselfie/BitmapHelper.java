@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory;
  * @author Ilya Murzinov
  */
 public class BitmapHelper {
-    public static int calculateInSampleSize(
+    public int calculateInSampleSize(
             BitmapFactory.Options options, int reqWidth, int reqHeight) {
         final int height = options.outHeight;
         final int width = options.outWidth;
@@ -24,7 +24,7 @@ public class BitmapHelper {
 
     }
 
-    public static Bitmap decodeSampledBitmapFromResource(String resId, int reqWidth, int reqHeight) {
+    public Bitmap decodeSampledBitmapFromResource(String resId, int reqWidth, int reqHeight) {
         final BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         BitmapFactory.decodeFile(resId, options);
