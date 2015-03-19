@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">DailySelfie</string>
+    <string name="app_name">Daily Selfie</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_camera">Settings</string>
-    <string name="main_take_selfie_btn_text">Take a Selfie!</string>
-    <string name="selfie_large_content_description">selfie</string>
+    <string name="selfie_large_content_description">large selfie</string>
     <string name="selfie_icon_content_description">small selfie</string>
-    <string name="notification_title">DailySelfie</string>
-    <string name="notification_message">I\'s time to take a selfie!</string>
+    <string name="notification_title">Daily Selfie</string>
+    <string name="notification_message">Time for another selfie!</string>
 
 </resources>

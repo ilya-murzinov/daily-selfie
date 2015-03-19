@@ -15,15 +15,15 @@ public class ShowNotificationReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Intent showNotificationIntent = new Intent(context, MainActivity.class);
-        PendingIntent showNotificationPendingIntent = PendingIntent.getActivity(context, 0, showNotificationIntent, 0);
+        PendingIntent showNotificationPendingIntent =
+                PendingIntent.getActivity(context, 0, showNotificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         Notification notification = new Notification.Builder(context)
-                //.setAutoCancel(true)
                 .setContentTitle(context.getString(R.string.notification_title))
                 .setContentText(context.getString(R.string.notification_message))
                 .setContentIntent(showNotificationPendingIntent)
                 .setSmallIcon(android.R.drawable.ic_menu_camera)
                 .build();
-        notification.flags = Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
+        notification.flags |= Notification.DEFAULT_LIGHTS | Notification.FLAG_AUTO_CANCEL;
         notificationManager.notify(1, notification);
     }
 }

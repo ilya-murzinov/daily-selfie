@@ -11,7 +11,9 @@ import java.util.Calendar;
  * @author Ilya Murzinov
  */
 public class AlarmHelper {
-    private static PendingIntent alarmPendingIntent;
+    private static boolean isSet;
+
+    private PendingIntent alarmPendingIntent;
 
     private final Context context;
 
@@ -21,15 +23,19 @@ public class AlarmHelper {
         alarmPendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
     }
 
-    public void setAlarm(int minutes) {
-        AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        alarmMgr.cancel(alarmPendingIntent);
+    public void setAlarm() {
+        if (!isSet) {
+            AlarmManager alarmMgr = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.MINUTE, 11);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(System.currentTimeMillis());
+            calendar.set(Calendar.HOUR_OF_DAY, 21);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
 
-        alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                minutes * 60 * 1000, alarmPendingIntent);
+            alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
+                    AlarmManager.INTERVAL_DAY, alarmPendingIntent);
+            isSet = true;
+        }
     }
 }

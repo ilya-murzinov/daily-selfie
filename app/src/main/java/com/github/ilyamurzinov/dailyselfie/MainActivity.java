@@ -64,7 +64,7 @@ public class MainActivity extends ActionBarActivity {
         refreshImages();
 
         alarmHelper = new AlarmHelper(this);
-        alarmHelper.setAlarm(1);
+        alarmHelper.setAlarm();
     }
 
 

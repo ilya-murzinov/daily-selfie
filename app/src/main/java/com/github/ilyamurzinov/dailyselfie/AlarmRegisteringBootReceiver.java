@@ -13,7 +13,7 @@ public class AlarmRegisteringBootReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
             AlarmHelper helper = new AlarmHelper(context);
-            helper.setAlarm(60 * 24);
+            helper.setAlarm();
         }
     }
 }
