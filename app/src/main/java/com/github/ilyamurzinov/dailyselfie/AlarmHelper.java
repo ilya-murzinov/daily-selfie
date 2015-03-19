@@ -29,12 +29,11 @@ public class AlarmHelper {
 
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(System.currentTimeMillis());
-            calendar.set(Calendar.HOUR_OF_DAY, 21);
-            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) + 2);
             calendar.set(Calendar.SECOND, 0);
 
             alarmMgr.setInexactRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(),
-                    AlarmManager.INTERVAL_DAY, alarmPendingIntent);
+                    2 * 60 * 1000, alarmPendingIntent);
             isSet = true;
         }
     }
