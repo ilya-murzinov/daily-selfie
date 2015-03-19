@@ -10,15 +10,7 @@
     <ListView
         android:id="@+id/gallery"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1">
+        android:layout_height="match_parent">
     </ListView>
-
-    <Button
-        android:id="@+id/take_selfie_button"
-        android:text="@string/main_take_selfie_btn_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_weight="0"/>
 
 </LinearLayout>

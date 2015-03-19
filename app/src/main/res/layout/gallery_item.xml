@@ -8,7 +8,7 @@
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="5dp"
-        android:contentDescription="image" />
+        android:contentDescription="@string/selfie_icon_content_description" />
 
     <TextView
         android:id="@+id/text"

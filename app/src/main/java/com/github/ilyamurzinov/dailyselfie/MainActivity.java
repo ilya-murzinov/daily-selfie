@@ -1,9 +1,13 @@
 package com.github.ilyamurzinov.dailyselfie;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
@@ -19,25 +23,35 @@ import android.widget.TextView;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 
 public class MainActivity extends ActionBarActivity {
 
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     private static final String FOLDER_NAME = "selfies";
+    public static final String ARGUMENT_PATH = "path";
+    public static final String FILE_NAME = "file:///%s/%d%02d%02d_%02d%02d%02d.jpg";
+
     private static List<File> images;
+    private static File imagesDir;
+    private GalleryFragment galleryFragment;
+
+    private AlarmHelper alarmHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
+            galleryFragment = new GalleryFragment();
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new PlaceholderFragment())
+                    .add(R.id.container, galleryFragment)
                     .commit();
         }
 
-        File imagesDir = new File(
+        imagesDir = new File(
                 Environment.getExternalStorageDirectory() +
                         File.separator +
                         FOLDER_NAME
@@ -47,129 +61,194 @@ public class MainActivity extends ActionBarActivity {
             imagesDir.mkdir();
         }
 
-        images = getListFiles(imagesDir);
+        refreshImages();
+
+        alarmHelper = new AlarmHelper(this);
+        alarmHelper.setAlarm(1);
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_camera) {
+
+            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    Calendar calendar = Calendar.getInstance();
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.parse(String.format(
+                            FILE_NAME,
+                            MainActivity.imagesDir.getAbsolutePath(),
+                            calendar.get(Calendar.YEAR),
+                            calendar.get(Calendar.MONTH),
+                            calendar.get(Calendar.DATE),
+                            calendar.get(Calendar.HOUR),
+                            calendar.get(Calendar.MINUTE),
+                            calendar.get(Calendar.SECOND)
+                    )));
+                    startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+                    return true;
+                }
+            });
+
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        refreshImages();
+        galleryFragment.adapter.notifyDataSetChanged();
+    }
 
-        public PlaceholderFragment() {
-        }
+    private static void refreshImages() {
+        images = getListFiles(imagesDir);
+    }
+
+    public static class GalleryFragment extends Fragment {
+
+        private static final String FRAGMENT_ID = "selfie";
+        private static final int ICON_DIMEN = 100;
+        private ListView listView;
+        private BaseAdapter adapter;
 
         @Override
         public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                                  final Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            ListView listView = (ListView) rootView.findViewById(R.id.gallery);
+            listView = (ListView) rootView.findViewById(R.id.gallery);
 
-            listView.setAdapter(new BaseAdapter() {
-                @Override
-                public int getCount() {
-                    return MainActivity.images.size();
-                }
+            adapter = new GalleryAdapter(inflater);
 
-                @Override
-                public Object getItem(int position) {
-                    return MainActivity.images.get(position);
-                }
-
-                @Override
-                public long getItemId(int position) {
-                    return position;
-                }
-
-                @Override
-                public View getView(int position, View convertView, ViewGroup parent) {
-                    View view = inflater.inflate(R.layout.gallery_item, null);
-                    TextView text = (TextView) view.findViewById(R.id.text);
-                    ImageView image = (ImageView) view.findViewById(R.id.image);
-
-                    text.setText(MainActivity.images.get(position).getName());
-
-                    String path = MainActivity.images.get(position).getAbsolutePath();
-                    image.setImageBitmap(decodeSampledBitmapFromResource(path, 100, 100));
-
-                    return view;
-                }
-            });
+            listView.setAdapter(adapter);
 
             listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    return;
+                    SelfieFragment selfieFragment = new SelfieFragment();
+                    Bundle bundle = new Bundle();
+                    bundle.putString(ARGUMENT_PATH, MainActivity.images.get(position).getAbsolutePath());
+                    selfieFragment.setArguments(bundle);
+                    getActivity().getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.container, selfieFragment)
+                            .addToBackStack(FRAGMENT_ID)
+                            .commit();
+                }
+            });
+
+            listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    final File image = MainActivity.images.get(position);
+
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Are you sure?")
+                            .setMessage(String.format("Do you want to delete selfie %s?", image.getName()))
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    image.delete();
+                                    refreshImages();
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            adapter.notifyDataSetChanged();
+                                        }
+                                    });
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            }).show();
+
+                    return true;
                 }
             });
 
             return rootView;
         }
 
-        public static int calculateInSampleSize(
-                BitmapFactory.Options options, int reqWidth, int reqHeight) {
-            // Raw height and width of image
-            final int height = options.outHeight;
-            final int width = options.outWidth;
-            int inSampleSize = 2;
+        static class GalleryAdapter extends BaseAdapter {
+            private LayoutInflater inflater;
 
-            if (height > reqHeight || width > reqWidth) {
-                if (width > height) {
-                    inSampleSize = Math.round((float) height / (float) reqHeight);
-                } else {
-                    inSampleSize = Math.round((float) width / (float) reqWidth);
-                }
+            GalleryAdapter(LayoutInflater inflater) {
+                this.inflater = inflater;
             }
-            return inSampleSize;
 
+            @Override
+            public int getCount() {
+                return MainActivity.images.size();
+            }
+
+            @Override
+            public Object getItem(int position) {
+                return MainActivity.images.get(position);
+            }
+
+            @Override
+            public long getItemId(int position) {
+                return position;
+            }
+
+            @Override
+            public View getView(int position, View convertView, ViewGroup parent) {
+                ViewHolder holder;
+                View view = convertView;
+
+                if (view == null) {
+                    view = inflater.inflate(R.layout.gallery_item, null);
+                    holder = new ViewHolder();
+                    holder.textView = (TextView) view.findViewById(R.id.text);
+                    holder.imageView = (ImageView) view.findViewById(R.id.image);
+                    view.setTag(holder);
+                } else {
+                    holder = (ViewHolder) view.getTag();
+                }
+
+                holder.textView.setText(MainActivity.images.get(position).getName());
+
+                String path = MainActivity.images.get(position).getAbsolutePath();
+                holder.imageView.setImageBitmap(BitmapHelper.decodeSampledBitmapFromResource(path, ICON_DIMEN, ICON_DIMEN));
+
+                return view;
+            }
         }
 
-        public static Bitmap decodeSampledBitmapFromResource(String resId,
-                                                             int reqWidth, int reqHeight) {
-
-            // First decode with inJustDecodeBounds=true to check dimensions
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            BitmapFactory.decodeFile(resId, options);
-
-            // Calculate inSampleSize
-            options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-            // Decode bitmap with inSampleSize set
-            options.inJustDecodeBounds = false;
-            return BitmapFactory.decodeFile(resId, options);
+        static class ViewHolder {
+            ImageView imageView;
+            TextView textView;
         }
     }
 
-    /**
-     * Read all image files from directory
-     *
-     * @param parentDir
-     * @return list of all image files
-     */
-    private List<File> getListFiles(File parentDir) {
+    public static class SelfieFragment extends Fragment {
+
+        public static final int IMAGE_DIMEN = 1000;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            View view = inflater.inflate(R.layout.fragment_selfie, null);
+            String path = (String) getArguments().get(ARGUMENT_PATH);
+            ImageView imageView = (ImageView) view.findViewById(R.id.selfie_large);
+            imageView.setImageBitmap(BitmapHelper.decodeSampledBitmapFromResource(path, IMAGE_DIMEN, IMAGE_DIMEN));
+            return view;
+        }
+    }
+
+    private static List<File> getListFiles(File parentDir) {
         ArrayList<File> inFiles = new ArrayList<>();
         File[] files = parentDir.listFiles();
         if (files != null) {
