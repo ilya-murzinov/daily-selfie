@@ -12,10 +12,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.github.ilyamurzinov.dailyselfie.component.BitmapHelper;
-import com.github.ilyamurzinov.dailyselfie.component.ImagesDAO;
 import com.github.ilyamurzinov.dailyselfie.R;
 import com.github.ilyamurzinov.dailyselfie.activity.MainActivity;
+import com.github.ilyamurzinov.dailyselfie.component.BitmapHelper;
+import com.github.ilyamurzinov.dailyselfie.component.ImagesDAO;
 
 import java.io.File;
 import java.util.List;
@@ -75,9 +75,9 @@ public class GalleryFragment extends BaseFragment {
                 final File image = images.get(position);
 
                 new AlertDialog.Builder(getActivity())
-                        .setTitle("Are you sure?")
-                        .setMessage(String.format("Do you want to delete selfie %s?", image.getName()))
-                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        .setTitle(getString(R.string.confirm_selfie_deletion_dialog_title))
+                        .setMessage(String.format(getString(R.string.confirm_selfie_deletion_dialog_message), image.getName()))
+                        .setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 imagesDAO.delete(image);
@@ -90,7 +90,7 @@ public class GalleryFragment extends BaseFragment {
                                 });
                             }
                         })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        .setNegativeButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

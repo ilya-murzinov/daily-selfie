@@ -8,5 +8,9 @@
     <string name="selfie_icon_content_description">small selfie</string>
     <string name="notification_title">Daily Selfie</string>
     <string name="notification_message">Time for another selfie!</string>
+    <string name="confirm_selfie_deletion_dialog_title">Are you sure?</string>
+    <string name="confirm_selfie_deletion_dialog_message">Do you want to delete selfie %s?</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
 
 </resources>
