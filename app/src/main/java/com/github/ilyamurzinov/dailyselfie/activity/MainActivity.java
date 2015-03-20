@@ -53,16 +53,10 @@ public class MainActivity extends BaseActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_camera) {
-            item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem item) {
-                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagesDAO.generateUriForNewFile());
-                    startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
-                    galleryFragment.update();
-                    return true;
-                }
-            });
+            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, imagesDAO.generateUriForNewFile());
+            startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
+            galleryFragment.update();
             return true;
         }
 

@@ -3,7 +3,7 @@
 
     <string name="app_name">Daily Selfie</string>
     <string name="hello_world">Hello world!</string>
-    <string name="action_camera">Settings</string>
+    <string name="action_camera">Camera</string>
     <string name="selfie_large_content_description">large selfie</string>
     <string name="selfie_icon_content_description">small selfie</string>
     <string name="notification_title">Daily Selfie</string>
