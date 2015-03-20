@@ -1,9 +1,11 @@
-package com.github.ilyamurzinov.dailyselfie;
+package com.github.ilyamurzinov.dailyselfie.component;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+
+import com.github.ilyamurzinov.dailyselfie.reciever.ShowNotificationReceiver;
 
 import java.util.Calendar;
 

@@ -1,4 +1,4 @@
-package com.github.ilyamurzinov.dailyselfie;
+package com.github.ilyamurzinov.dailyselfie.component;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;

@@ -1,6 +1,13 @@
-package com.github.ilyamurzinov.dailyselfie;
+package com.github.ilyamurzinov.dailyselfie.component;
 
+import android.app.NotificationManager;
 import android.content.Context;
+
+import com.github.ilyamurzinov.dailyselfie.activity.MainActivity;
+import com.github.ilyamurzinov.dailyselfie.fragment.GalleryFragment;
+import com.github.ilyamurzinov.dailyselfie.fragment.SelfieFragment;
+import com.github.ilyamurzinov.dailyselfie.reciever.AlarmRegisteringBootReceiver;
+import com.github.ilyamurzinov.dailyselfie.reciever.ShowNotificationReceiver;
 
 import dagger.Module;
 import dagger.Provides;
@@ -10,25 +17,20 @@ import dagger.Provides;
  */
 @Module(injects = {
         AlarmRegisteringBootReceiver.class,
+        ShowNotificationReceiver.class,
         MainActivity.class,
         GalleryFragment.class,
         SelfieFragment.class
-}, library = true)
+})
 public class DailySelfieModule {
-    private final Context context;
     private final ImagesDAO imagesDAO = new ImagesDAO();
     private final BitmapHelper bitmapHelper = new BitmapHelper();
     private final AlarmHelper alarmHelper;
-    private final SelfieTaker selfieTaker = new SelfieTaker();
+    private final NotificationManager notificationManager;
 
     public DailySelfieModule(Context context) {
-        this.context = context;
         alarmHelper = new AlarmHelper(context);
-    }
-
-    @Provides
-    public Context getContext() {
-        return context;
+        notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 
     @Provides
@@ -47,7 +49,7 @@ public class DailySelfieModule {
     }
 
     @Provides
-    public SelfieTaker getSelfieTaker() {
-        return selfieTaker;
+    public NotificationManager getNotificationManager() {
+        return notificationManager;
     }
 }

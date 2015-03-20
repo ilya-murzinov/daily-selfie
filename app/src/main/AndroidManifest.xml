@@ -18,7 +18,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.MainActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -27,7 +27,7 @@
         </activity>
 
         <receiver
-            android:name=".AlarmRegisteringBootReceiver"
+            android:name=".reciever.AlarmRegisteringBootReceiver"
             android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -35,7 +35,7 @@
         </receiver>
 
         <receiver
-            android:name=".ShowNotificationReceiver"
+            android:name=".reciever.ShowNotificationReceiver"
             android:enabled="true" />
 
     </application>

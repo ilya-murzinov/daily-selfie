@@ -2,6 +2,8 @@ package com.github.ilyamurzinov.dailyselfie;
 
 import android.app.Application;
 
+import com.github.ilyamurzinov.dailyselfie.component.DailySelfieModule;
+
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,7 +13,7 @@ import dagger.ObjectGraph;
  * @author Ilya Murzinov [murz42@gmail.com]
  */
 public class DailySelfieApplication extends Application {
-    private ObjectGraph graph;
+    private static ObjectGraph graph;
 
     @Override
     public void onCreate() {
@@ -25,7 +27,7 @@ public class DailySelfieApplication extends Application {
         );
     }
 
-    public void inject(Object object) {
+    public static void inject(Object object) {
         graph.inject(object);
     }
 }

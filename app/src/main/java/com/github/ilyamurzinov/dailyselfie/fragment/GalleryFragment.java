@@ -1,4 +1,4 @@
-package com.github.ilyamurzinov.dailyselfie;
+package com.github.ilyamurzinov.dailyselfie.fragment;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -11,6 +11,11 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.github.ilyamurzinov.dailyselfie.component.BitmapHelper;
+import com.github.ilyamurzinov.dailyselfie.component.ImagesDAO;
+import com.github.ilyamurzinov.dailyselfie.R;
+import com.github.ilyamurzinov.dailyselfie.activity.MainActivity;
 
 import java.io.File;
 import java.util.List;
@@ -75,7 +80,7 @@ public class GalleryFragment extends BaseFragment {
                         .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                image.delete();
+                                imagesDAO.delete(image);
                                 images = imagesDAO.getImages();
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override

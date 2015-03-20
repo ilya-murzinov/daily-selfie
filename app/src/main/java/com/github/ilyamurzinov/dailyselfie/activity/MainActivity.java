@@ -1,15 +1,22 @@
-package com.github.ilyamurzinov.dailyselfie;
+package com.github.ilyamurzinov.dailyselfie.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.github.ilyamurzinov.dailyselfie.component.AlarmHelper;
+import com.github.ilyamurzinov.dailyselfie.fragment.GalleryFragment;
+import com.github.ilyamurzinov.dailyselfie.component.ImagesDAO;
+import com.github.ilyamurzinov.dailyselfie.R;
 
 import javax.inject.Inject;
 
 
 public class MainActivity extends BaseActivity {
 
+    private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
     public static final String ARGUMENT_PATH = "path";
 
     private GalleryFragment galleryFragment;
@@ -18,7 +25,7 @@ public class MainActivity extends BaseActivity {
     public AlarmHelper alarmHelper;
 
     @Inject
-    public SelfieTaker selfieTaker;
+    public ImagesDAO imagesDAO;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +56,9 @@ public class MainActivity extends BaseActivity {
             item.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    selfieTaker.takeSelfie(MainActivity.this);
+                    Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT, imagesDAO.generateUriForNewFile());
+                    startActivityForResult(intent, CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE);
                     galleryFragment.update();
                     return true;
                 }
